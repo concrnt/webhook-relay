@@ -1,0 +1,26 @@
+listen: ":8080"
+
+concrnt:
+  # 接続先ドメイン。devnetなど非TLS環境では http://localhost:8000 のようにスキーム付きで指定
+  domain: "example.tld"
+  # 省略可。指定した場合はprivateKeyから導出したCCIDと一致するか起動時に検証する
+  ccid: ""
+  # 64桁hexの秘密鍵。環境変数 PRIVATE_KEY でも上書き可能
+  privateKey: ""
+
+webhooks:
+  - path: /github
+    # 投稿先タイムライン (v2のcckv URI形式)
+    timelines:
+      - "cckv://con1example/concrnt.world/profiles/main/home-timeline"
+    # 省略時は https://schema.concrnt.world/m/markdown.json
+    schema: ""
+    profileOverride:
+      username: "github bot"
+      avatar: "https://example.tld/avatar.png"
+      description: "github bot"
+      link: "https://example.tld"
+    # Goのtext/template形式。.body にリクエストJSON、.headers に小文字化したヘッダが入る
+    template: |
+      hi im github {{ .body.title }} :
+       {{ .body.text }}
