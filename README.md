@@ -42,6 +42,8 @@ curl -X POST localhost:8080/github \
 - `.body` — リクエストボディ (JSONパース済み)。例: `{{ .body.title }}`
 - `.headers` — リクエストヘッダ (キーは小文字)。例: `{{ index .headers "x-github-event" }}`
 
+JSONの `null` は `""` に置き換えてから渡されるので、`{{ .body.pull_request.body }}` のような空欄フィールドは何も出力しません(`{{ if }}` では偽のままです)。
+
 レンダリング結果が空、または4096文字を超える場合は投稿せずに 200 を返します(送信元のリトライ抑止のため)。投稿(commit)に失敗した場合は 500 を返します。
 
 ## concurrent-webhook (v1) からの移行

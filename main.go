@@ -59,6 +59,26 @@ type ProfileOverride struct {
 	Link        string `yaml:"link" json:"link,omitempty"`
 }
 
+// nullToEmpty replaces JSON null with "" so that printing a null field (a PR
+// or issue with an empty body, say) renders nothing instead of "<no value>",
+// matching what the EJS templates of concurrent-webhook produced. "" is still
+// falsy in {{ if }} so conditionals behave the same.
+func nullToEmpty(v any) any {
+	switch t := v.(type) {
+	case nil:
+		return ""
+	case map[string]any:
+		for k, e := range t {
+			t[k] = nullToEmpty(e)
+		}
+	case []any:
+		for i, e := range t {
+			t[i] = nullToEmpty(e)
+		}
+	}
+	return v
+}
+
 func main() {
 	configPath := flag.String("config", "config.yaml", "path to config file")
 	flag.Parse()
@@ -125,6 +145,7 @@ func main() {
 				http.Error(w, "invalid json", http.StatusBadRequest)
 				return
 			}
+			body = nullToEmpty(body)
 			// Express lowercases header names; keep templates portable from v1.
 			headers := map[string]string{}
 			for name, values := range r.Header {
