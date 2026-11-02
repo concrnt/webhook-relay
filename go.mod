@@ -3,7 +3,7 @@ module github.com/concrnt/webhook-relay
 go 1.25.1
 
 require (
-	github.com/concrnt/concrnt v1.11.9
+	github.com/concrnt/concrnt v1.11.10
 	gopkg.in/yaml.v3 v3.0.1
 )
 
